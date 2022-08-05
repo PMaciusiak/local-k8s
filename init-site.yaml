@@ -1,0 +1,3 @@
+---
+- import_playbook: minikube-pre.yaml
+- import_playbook: namespaces.yaml

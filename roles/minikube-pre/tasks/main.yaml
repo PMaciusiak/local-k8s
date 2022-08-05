@@ -1,2 +1,14 @@
-- name: Check prerequisites for minikube
-  shell: echo "hello ansbile"
+---
+- name: Check the status of minikube.
+  command: minikube status
+  register: minikube_status
+  changed_when: false
+  ignore_errors: true
+
+- name: Start minikube if it's not running.
+  command: minikube start --vm-driver={{vm_provisioner}}
+  when: "not minikube_status.stdout or 'Running' not in minikube_status.stdout"
+
+- name: Start kubernetes dashboard if needed.
+  command: minikube dashboard
+  when: "{{dashboard.enabled}}"

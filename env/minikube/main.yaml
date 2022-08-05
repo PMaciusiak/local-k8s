@@ -1,3 +1,8 @@
 all:
   vars:
-  
+    vm_provisioner: virtualbox
+    dashboard:
+      enabled: false
+    namespaces:
+      - dev01
+      - prod01

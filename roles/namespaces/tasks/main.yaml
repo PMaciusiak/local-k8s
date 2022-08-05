@@ -1,0 +1,8 @@
+---
+- name: Create namaspaces.
+  kubernetes.core.k8s:
+    name: "{{ item }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+  loop: "{{namespaces}}"
