@@ -1,3 +1,10 @@
 all:
   vars:
     namespace: dev01
+    postgres:
+      enabled: true
+      pvc:
+        name: postgres-claim-dev
+        size: 10Mi
+        access_modes:
+          - ReadWriteMany

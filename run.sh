@@ -1,6 +1,13 @@
 # !/bin/bash
 set -e
-ENVIRONMENT=minikube
+ENVIRONMENT=dev01
 ENVIRONMENT_DIRECTORY=env/$ENVIRONMENT
 
-ansible-playbook -i $ENVIRONMENT_DIRECTORY minikube-pre.yaml
+VAULT_ID=$ENVIRONMENT-vault
+VAULT_PASS=''
+echo "$VAULT_PASS" > vault-pass
+
+  ansible-playbook --vault-id $VAULT_ID@vault-pass -i $ENVIRONMENT_DIRECTORY \
+  postgres.yaml
+
+rm vault-pass

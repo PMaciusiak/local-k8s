@@ -1,0 +1,148 @@
+---
+- name: Create a PVC for postgres
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: "{{postgres.pvc.name}}"
+        namespace: "{{ namespace }}"
+      spec:
+        accessModes: "{{ postgres.pvc.access_modes }}"
+        resources:
+          requests:
+            storage: "{{ postgres.pvc.size }}"
+
+- name: Create a secret for postgres
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      type: Opaque
+      metadata:
+        name: postgres-secret
+        namespace: "{{ namespace }}"
+      data:
+        username: "{{ postgres_secret.username | b64encode }}"
+        password: "{{ postgres_secret.password | b64encode }}"      
+
+- name: Create postgres11 deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: postgres11
+        namespace: "{{ namespace }}"
+      spec:
+        selector:
+          matchLabels:
+            app: postgres11
+        replicas: 1
+        strategy:
+          type: Recreate
+        template:
+          metadata:
+            labels:
+              app: postgres11
+          spec:
+            containers:
+            - name: postgres11
+              image: postgres:11.12
+              imagePullPolicy: IfNotPresent
+              env:
+                - name: POSTGRES_DB
+                  value: test
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: username            
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgres-secret
+                      key: password
+                - name: PGDATA
+                  value: /var/lib/postgresql/data/db
+              ports:
+              - containerPort: 5432
+              volumeMounts:
+              - name: storage
+                mountPath: /var/lib/postgresql/data
+            volumes:
+            - name: storage
+              persistentVolumeClaim:
+                claimName: "{{postgres.pvc.name}}"
+
+- name: Create postgres11 service
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: postgres11
+        namespace: "{{ namespace }}"
+      spec:
+        ports:
+        - name: tcp
+          port: 5432
+          targetPort: 5432
+        selector:
+          app: postgres11
+
+- name: Create adminer service
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: adminer
+        namespace: "{{ namespace }}"
+      spec:
+        type: LoadBalancer
+        ports:
+        - name: http
+          port: 80
+          targetPort: 8080
+        selector:
+          app: adminer
+
+- name: Create adminer deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: adminer
+        namespace: "{{ namespace }}"
+      spec:
+        selector:
+          matchLabels:
+            app: adminer
+        replicas: 1
+        template:
+          metadata:
+            labels:
+              app: adminer
+          spec:
+            containers:
+            - name: adminer
+              image: adminer:4.8.0
+              imagePullPolicy: IfNotPresent
+              ports:
+              - containerPort: 8080
+
+- name: Expose adminer on the host via Minikube.
+  command: minikube service adminer --url -n "{{ namespace }}"
+  changed_when: false
+  register: minikube_service
+
+- debug:
+    msg: "Adminer URL: {{ minikube_service['stdout_lines'][0] }}"
