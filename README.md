@@ -4,9 +4,9 @@ ansible-galaxy collection install kubernetes.core
 
 ## Prerequisites:
 
-Ansible (with kubernetes.core collection)
-minikube
-Helm
+ * Ansible (with kubernetes.core collection)
+ * minikube
+ * Helm
 
 ## Installation:
 
