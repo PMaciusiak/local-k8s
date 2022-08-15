@@ -10,3 +10,9 @@ all:
           - ReadWriteMany
     simple_web:
       enabled: true
+    tests:
+      enabled: true
+      cpu_percent: 80
+      replicas:
+        min: 1
+        max: 4

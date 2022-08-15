@@ -9,4 +9,10 @@ all:
         access_modes:
           - ReadWriteMany
     simple_web:
-      enabled: true          
+      enabled: true
+    tests:
+      enabled: true
+      cpu_percent: 80
+      replicas:
+        min: 1
+        max: 4      
