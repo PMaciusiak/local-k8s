@@ -59,4 +59,4 @@
   register: minikube_service
 
 - debug:
-    msg: "Adminer URL: {{ minikube_service['stdout_lines'][0] }}"
+    msg: "Kibana URL: {{ minikube_service['stdout_lines'][0] }}"

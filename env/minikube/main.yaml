@@ -7,6 +7,7 @@ all:
       - dev01
       - prod01
       - elk
+      - monitoring
     resources:
       cpu: 4
       ram: 8192

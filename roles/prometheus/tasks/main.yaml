@@ -1,0 +1,92 @@
+---
+- name: Add prometheus helm chart repo
+  kubernetes.core.helm_repository:
+    name: prometheus-community
+    repo_url: https://prometheus-community.github.io/helm-charts
+
+- name: Add prometheus helm chart repo
+  kubernetes.core.helm_repository:
+    name: grafana
+    repo_url: https://grafana.github.io/helm-charts
+
+- name: Deploy prometheus helm chart
+  kubernetes.core.helm:
+    name: prometheus
+    chart_ref: prometheus-community/prometheus
+    release_namespace: monitoring
+    update_repo_cache: yes
+    release_state: present
+    wait: false
+
+- name: Deploy grafana helm chart
+  kubernetes.core.helm:
+    name: grafana
+    chart_ref: grafana/grafana
+    release_namespace: monitoring
+    update_repo_cache: yes
+    release_state: present
+    wait: false
+    values:
+      datasources:
+        datasources.yaml:
+          apiVersion: 1
+          datasources:
+          - name: Prometheus
+            type: prometheus
+            url: http://prometheus-server:80
+      dashboardProviders:
+        dashboardproviders.yaml:
+          apiVersion: 1
+          providers:
+          - name: 'default'
+            orgId: 1
+            folder: ''
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+      dashboards:
+        default:
+          prometheus-stats:
+            gnetId: 1860
+            revision: 27
+            datasource: Prometheus        
+
+- name: Create adminer service
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: prometheus-server-np
+        namespace: monitoring
+      spec:
+        type: NodePort
+        ports:
+        - name: tcp
+          port: 80
+          targetPort: 9090
+        selector:
+          app: prometheus
+
+- name: Expose grafana service.
+  command: kubectl expose service grafana --type=NodePort --target-port=3000 --name=grafana-np -n "monitoring"
+  ignore_errors: true
+
+- name: Expose prometheus on the host via Minikube.
+  command: minikube service prometheus-server-np --url -n "monitoring"
+  changed_when: false
+  register: minikube_service
+
+- debug:
+    msg: "Prometheus URL: {{ minikube_service['stdout_lines'][0] }}"
+
+- name: Expose grafana on the host via Minikube.
+  command: minikube service grafana-np --url -n "monitoring"
+  changed_when: false
+  register: minikube_service
+
+- debug:
+    msg: "Grafana URL: {{ minikube_service['stdout_lines'][0] }}"
