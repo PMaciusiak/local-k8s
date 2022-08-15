@@ -1,0 +1,62 @@
+---
+- name: Add elastic helm chart repo
+  kubernetes.core.helm_repository:
+    name: elastic
+    repo_url: https://Helm.elastic.co
+
+- name: Deploy elasticsearch helm chart
+  kubernetes.core.helm:
+    name: elasticsearch
+    chart_ref: elastic/elasticsearch
+    release_namespace: elk
+    update_repo_cache: yes
+    release_state: present
+    wait: false
+    values:
+      antiAffinity: "soft"
+
+      esJavaOpts: "-Xmx128m -Xms128m"
+
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "512M"
+        limits:
+          cpu: "1000m"
+          memory: "512M"
+
+      volumeClaimTemplate:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "standard"
+        resources:
+          requests:
+            storage: 100M
+
+- name: Deploy kibana helm chart
+  kubernetes.core.helm:
+    name: kibana
+    chart_ref: elastic/kibana
+    release_namespace: elk
+    update_repo_cache: yes
+    release_state: present
+    wait: false
+    values:
+      service:
+        type: LoadBalancer
+
+- name: Deploy metricbeat helm chart
+  kubernetes.core.helm:
+    name: metricbeat
+    chart_ref: elastic/metricbeat
+    release_namespace: elk
+    update_repo_cache: yes
+    release_state: present
+    wait: false
+
+- name: Expose kibana on the host via Minikube.
+  command: minikube service kibana-kibana --url -n "elk"
+  changed_when: false
+  register: minikube_service
+
+- debug:
+    msg: "Adminer URL: {{ minikube_service['stdout_lines'][0] }}"
