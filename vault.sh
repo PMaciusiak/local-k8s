@@ -3,7 +3,7 @@ set -e
 
 ENV=dev01
 VAULT_ID=$ENV-vault
-VAULT_PASS='admin'
+VAULT_PASS=''
 echo "$VAULT_PASS" > vault-pass
 
 # Encrypt whole file

@@ -2,7 +2,7 @@ all:
   vars:
     namespace: dev01
     postgres:
-      enabled: true
+      enabled: false
       pvc:
         name: postgres-claim-dev
         size: 10Mi

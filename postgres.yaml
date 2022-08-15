@@ -3,4 +3,5 @@
   gather_facts: false
   become: false
   roles:
-    - postgres
+    - role: postgres
+      when: postgres.enabled

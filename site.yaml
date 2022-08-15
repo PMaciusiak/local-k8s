@@ -1,0 +1,4 @@
+---
+- import_playbook: elk.yaml
+- import_playbook: postgres.yaml
+- import_playbook: prometheus.yaml

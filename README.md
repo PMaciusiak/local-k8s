@@ -18,3 +18,4 @@ In run.sh change ENVIRONMENT='inventory' depending on which inventory you want t
 ```console
 ./run.sh
 ```
+VAULT_PASS='admin'
