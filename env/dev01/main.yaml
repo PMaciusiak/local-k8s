@@ -8,3 +8,5 @@ all:
         size: 10Mi
         access_modes:
           - ReadWriteMany
+    simple_web:
+      enabled: true

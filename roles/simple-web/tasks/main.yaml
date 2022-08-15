@@ -1,0 +1,52 @@
+---
+- name: Create simple-web deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: simple-web
+        namespace: "{{ namespace }}"
+      spec:
+        selector:
+          matchLabels:
+            app: simple-web
+        replicas: 1
+        template:
+          metadata:
+            labels:
+              app: simple-web
+          spec:
+            containers:
+            - name: simple-web
+              image: yeasy/simple-web:latest
+              imagePullPolicy: IfNotPresent
+              ports:
+              - containerPort: 80
+
+- name: Create simple-web service
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: simple-web
+        namespace: "{{ namespace }}"
+      spec:
+        type: LoadBalancer
+        ports:
+        - name: http
+          port: 80
+          targetPort: 80
+        selector:
+          app: simple-web
+
+- name: Expose simple-web on the host via Minikube.
+  command: minikube service simple-web --url -n "{{ namespace }}"
+  changed_when: false
+  register: minikube_service
+
+- debug:
+    msg: "simple-web URL: {{ minikube_service['stdout_lines'][0] }}"

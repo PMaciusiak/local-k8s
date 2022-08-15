@@ -1,0 +1,7 @@
+---
+- hosts: localhost
+  gather_facts: false
+  become: false
+  roles:
+    - role: simple-web
+      when: simple_web.enabled
