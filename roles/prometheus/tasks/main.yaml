@@ -4,7 +4,7 @@
     name: prometheus-community
     repo_url: https://prometheus-community.github.io/helm-charts
 
-- name: Add prometheus helm chart repo
+- name: Add grafana helm chart repo
   kubernetes.core.helm_repository:
     name: grafana
     repo_url: https://grafana.github.io/helm-charts
@@ -53,7 +53,7 @@
             revision: 27
             datasource: Prometheus        
 
-- name: Create adminer service
+- name: Create prometheus service
   kubernetes.core.k8s:
     state: present
     definition:

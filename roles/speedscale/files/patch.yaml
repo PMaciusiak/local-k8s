@@ -1,0 +1,9 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: podtato-head-entry
+  annotations:
+    replay.speedscale.com/snapshot-id: "uniqueid"
+    replay.speedscale.com/testconfig-id: performance_10replicas
+    replay.speedscale.com/cleanup: "inventory"
+    sidecar.speedscale.com/inject: "true"

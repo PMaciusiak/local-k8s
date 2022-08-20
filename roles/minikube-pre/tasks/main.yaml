@@ -6,7 +6,7 @@
   ignore_errors: true
 
 - name: Start minikube if it's not running.
-  command: minikube start --vm-driver={{vm_provisioner}} --cpus {{resources.cpu}} --memory {{resources.ram}}
+  command: minikube start --vm-driver={{vm_provisioner}} --cpus {{resources.cpu}} --memory {{resources.ram}} --cni=true
   when: "not minikube_status.stdout or 'Running' not in minikube_status.stdout"
 
 - name: Start kubernetes dashboard if needed.

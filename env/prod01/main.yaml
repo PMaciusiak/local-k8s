@@ -16,3 +16,5 @@ all:
       replicas:
         min: 1
         max: 4      
+    speedscale:
+      enabled: true        

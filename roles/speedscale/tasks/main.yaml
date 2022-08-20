@@ -1,0 +1,312 @@
+---
+- name: Create podtato-head-entry deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: podtato-head-entry
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          matchLabels:
+            component: podtato-head-entry
+        template:
+          metadata:
+            labels:
+              component: podtato-head-entry
+          spec:
+            terminationGracePeriodSeconds: 5
+            containers:
+            - name: server
+              image: ghcr.io/speedscale/podtato-head/entry:0.2.7
+              imagePullPolicy: IfNotPresent
+              ports:
+              - containerPort: 31000
+              env:
+              - name: PODTATO_PORT
+                value: "31000"
+
+- name: Create podtato-head-entry service
+  kubernetes.core.k8s:
+    state: present
+    definition:  
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: podtato-head-entry
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          component: podtato-head-entry
+        ports:
+        - name: http
+          nodePort: 31000
+          port: 31000
+          protocol: TCP
+        type: NodePort
+
+- name: Create podtato-head-hat deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: podtato-head-hat
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          matchLabels:
+            component: podtato-head-hat
+        template:
+          metadata:
+            labels:
+              component: podtato-head-hat
+          spec:
+            terminationGracePeriodSeconds: 5
+            containers:
+              - name: server
+                image:  ghcr.io/speedscale/podtato-head/hat:0.2.7
+                imagePullPolicy: IfNotPresent
+                ports:
+                  - containerPort: 9000
+                env:
+                  - name: PODTATO_PORT
+                    value: "9000"
+
+- name: Create podtato-head-hat service
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: podtato-head-hat
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          component: podtato-head-hat
+        ports:
+          - name: http
+            port: 9001
+            protocol: TCP
+            targetPort: 9000
+        type: ClusterIP
+
+- name: Create podtato-head-left-leg deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: podtato-head-left-leg
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          matchLabels:
+            component: podtato-head-left-leg
+        template:
+          metadata:
+            labels:
+              component: podtato-head-left-leg
+          spec:
+            terminationGracePeriodSeconds: 5
+            containers:
+              - name: server
+                image:  ghcr.io/speedscale/podtato-head/left-leg:0.2.7
+
+                ports:
+                  - containerPort: 9000
+                env:
+                  - name: PODTATO_PORT
+                    value: "9000"
+
+- name: Create podtato-head-left-leg service
+  kubernetes.core.k8s:
+    state: present
+    definition:  
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: podtato-head-left-leg
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          component: podtato-head-left-leg
+        ports:
+          - name: http
+            port: 9002
+            protocol: TCP
+            targetPort: 9000
+        type: ClusterIP
+
+- name: Create podtato-head-left-arm deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: podtato-head-left-arm
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          matchLabels:
+            component: podtato-head-left-arm
+        template:
+          metadata:
+            labels:
+              component: podtato-head-left-arm
+          spec:
+            terminationGracePeriodSeconds: 5
+            containers:
+              - name: server
+                image:  ghcr.io/speedscale/podtato-head/left-arm:0.2.7
+                imagePullPolicy: IfNotPresent
+                ports:
+                  - containerPort: 9000
+                env:
+                  - name: PODTATO_PORT
+                    value: "9000"
+
+- name: Create podtato-head-left-arm service
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: podtato-head-left-arm
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          component: podtato-head-left-arm
+        ports:
+          - name: http
+            port: 9003
+            protocol: TCP
+            targetPort: 9000
+        type: ClusterIP
+
+- name: Create podtato-head-right-leg deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: podtato-head-right-leg
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          matchLabels:
+            component: podtato-head-right-leg
+        template:
+          metadata:
+            labels:
+              component: podtato-head-right-leg
+          spec:
+            terminationGracePeriodSeconds: 5
+            containers:
+              - name: server
+                image:  ghcr.io/speedscale/podtato-head/right-leg:0.2.7
+                imagePullPolicy: IfNotPresent
+                ports:
+                  - containerPort: 9000
+                env:
+                  - name: PODTATO_PORT
+                    value: "9000"
+
+- name: Create podtato-head-right-leg service
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: podtato-head-right-leg
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          component: podtato-head-right-leg
+        ports:
+          - name: http
+            port: 9004
+            protocol: TCP
+            targetPort: 9000
+        type: ClusterIP
+
+- name: Create podtato-head-right-arm deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: podtato-head-right-arm
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          matchLabels:
+            component: podtato-head-right-arm
+        template:
+          metadata:
+            labels:
+              component: podtato-head-right-arm
+          spec:
+            terminationGracePeriodSeconds: 5
+            containers:
+              - name: server
+                image:  ghcr.io/speedscale/podtato-head/right-arm:0.2.7
+                imagePullPolicy: IfNotPresent
+                ports:
+                  - containerPort: 9000
+                env:
+                  - name: PODTATO_PORT
+                    value: "9000"
+
+- name: Create podtato-head-right-arm service
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: podtato-head-right-arm
+        namespace: speedscale
+        labels:
+          app: podtato-head
+      spec:
+        selector:
+          component: podtato-head-right-arm
+        ports:
+          - name: http
+            port: 9005
+            protocol: TCP
+            targetPort: 9000
+        type: ClusterIP

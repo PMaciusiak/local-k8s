@@ -8,6 +8,7 @@ all:
       - prod01
       - elk
       - monitoring
+      - speedscale
     resources:
       cpu: 4
       ram: 8192

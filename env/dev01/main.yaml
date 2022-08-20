@@ -2,7 +2,7 @@ all:
   vars:
     namespace: dev01
     postgres:
-      enabled: false
+      enabled: true
       pvc:
         name: postgres-claim-dev
         size: 10Mi
@@ -16,3 +16,5 @@ all:
       replicas:
         min: 1
         max: 4
+    speedscale:
+      enabled: true
