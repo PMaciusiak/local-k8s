@@ -3,6 +3,10 @@
   command: minikube addons enable metrics-server 
   when: "{{tests.enabled}}"
 
+- name: Delete autoscale.
+  command: kubectl delete hpa php-apache --namespace={{namespace}}
+  ignore_errors: true
+
 - name: Create php-apache deployment
   kubernetes.core.k8s:
     state: present
@@ -25,6 +29,7 @@
             containers:
             - name: php-apache
               image: k8s.gcr.io/hpa-example
+              imagePullPolicy: IfNotPresent
               ports:
               - containerPort: 80
               resources:
@@ -78,7 +83,8 @@
             containers:
             - name: infinite-calls
               image: busybox
+              imagePullPolicy: IfNotPresent
               command:
               - /bin/sh
               - -c
-              - "while true; do wget -q -O- http://php-apache; done"
+              - "while true; do wget -q -O- http://php-apache; sleep 0.2; done"

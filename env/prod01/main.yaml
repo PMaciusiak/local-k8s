@@ -1,6 +1,6 @@
 all:
   vars:
-    namespace: dev01
+    namespace: prod01
     postgres:
       enabled: true
       pvc:
@@ -12,9 +12,9 @@ all:
       enabled: true
     tests:
       enabled: true
-      cpu_percent: 80
+      cpu_percent: 70
       replicas:
         min: 1
-        max: 4      
+        max: 10      
     speedscale:
       enabled: true        

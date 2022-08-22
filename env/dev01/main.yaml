@@ -12,9 +12,9 @@ all:
       enabled: true
     tests:
       enabled: true
-      cpu_percent: 80
+      cpu_percent: 90
       replicas:
         min: 1
-        max: 4
+        max: 10
     speedscale:
-      enabled: true
+      enabled: false
