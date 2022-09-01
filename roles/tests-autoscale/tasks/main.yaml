@@ -1,12 +1,4 @@
 ---
-- name: Add metrics-server if load tests enabled.
-  command: minikube addons enable metrics-server 
-  when: "{{tests.enabled}}"
-
-- name: Delete autoscale.
-  command: kubectl delete hpa php-apache --namespace={{namespace}}
-  ignore_errors: true
-
 - name: Create php-apache deployment
   kubernetes.core.k8s:
     state: present
@@ -14,6 +6,9 @@
       apiVersion: apps/v1
       kind: Deployment
       metadata:
+        annotations:
+          sidecar.speedscale.com/inject: "true"
+          sidecar.speedscale.com/capture-mode: "proxy"
         namespace: "{{ namespace }}"
         name: php-apache
       spec:
@@ -55,9 +50,6 @@
         selector:
           run: php-apache
 
-# - name: Enable autoscale.
-#   command: kubectl autoscale deployment php-apache --cpu-percent="{{tests.cpu_percent}}" --min="{{tests.replicas.min}}" --max="{{tests.replicas.max}}" -n "{{ namespace }}"
-
 - name: Create php-apache deployment
   kubernetes.core.k8s:
     state: present
@@ -87,4 +79,19 @@
               command:
               - /bin/sh
               - -c
-              - "while true; do wget -q -O- http://php-apache; sleep 0.5; done"
+              - "while true; do wget -q -O- http://php-apache; sleep 3.5; done"
+
+- name: Wait untill logs get sent
+  command: sleep 100
+
+- name: Delete inifite calls deployment
+  kubernetes.core.k8s:
+    state: absent
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        namespace: "{{ namespace }}"
+        name: infinite-calls
+        labels:
+          app: infinite-calls

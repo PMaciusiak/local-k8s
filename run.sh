@@ -8,6 +8,6 @@ VAULT_PASS='admin'
 echo "$VAULT_PASS" > vault-pass
 
   ansible-playbook --vault-id $VAULT_ID@vault-pass -i $ENVIRONMENT_DIRECTORY \
-  site.yaml
+  tests-autoscale.yaml
 
 rm vault-pass
