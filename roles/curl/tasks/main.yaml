@@ -1,0 +1,30 @@
+---
+- name: Create curl deployment
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: curl
+        namespace: "{{ namespace }}"
+      spec:
+        selector:
+          matchLabels:
+            app: curl
+        replicas: 1
+        template:
+          metadata:
+            labels:
+              app: curl
+          spec:
+            containers:
+            - name: curl
+              image: curlimages/curl:7.85.0
+              imagePullPolicy: IfNotPresent
+              command:
+              - /bin/sh
+              - -c
+              - sleep 60000
+              ports:
+              - containerPort: 8080
