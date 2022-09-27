@@ -17,6 +17,9 @@
     update_repo_cache: yes
     release_state: present
     wait: false
+    values:
+      nodeExporter:
+        extraArgs: {collector.systemd, collector.processes}
 
 - name: Deploy grafana helm chart
   kubernetes.core.helm:
@@ -50,7 +53,7 @@
         default:
           prometheus-stats:
             gnetId: 1860
-            revision: 27
+            revision: 15
             datasource: Prometheus        
 
 - name: Create prometheus service
